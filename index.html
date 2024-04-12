@@ -1,54 +1,64 @@
 hello 四十hz
-<button id="playButton">Play Binaural Beats</button>
+<button id="toggleButton">></button>
 
 <script>
   // Create an instance of the AudioContext
+// Create an instance of the AudioContext
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playBinauralBeat(baseFrequency, beatFrequency) {
-  // Calculate the frequencies for each ear
+let leftOscillator, rightOscillator;
+let isPlaying = false; // Track playing state
+
+function createOscillators(baseFrequency, beatFrequency) {
   const leftEarFrequency = baseFrequency;
   const rightEarFrequency = baseFrequency + beatFrequency;
 
-  // Create oscillators for each ear
-  const leftOscillator = audioCtx.createOscillator();
-  const rightOscillator = audioCtx.createOscillator();
+  leftOscillator = audioCtx.createOscillator();
+  rightOscillator = audioCtx.createOscillator();
 
-  // Set oscillator frequencies
   leftOscillator.frequency.setValueAtTime(leftEarFrequency, audioCtx.currentTime);
   rightOscillator.frequency.setValueAtTime(rightEarFrequency, audioCtx.currentTime);
 
-  // Create a stereo panner for each oscillator to pan the sound left or right
   const leftPanner = audioCtx.createStereoPanner();
   const rightPanner = audioCtx.createStereoPanner();
   leftPanner.pan.setValueAtTime(-1, audioCtx.currentTime); // Pan left
   rightPanner.pan.setValueAtTime(1, audioCtx.currentTime); // Pan right
 
-  // Connect the oscillators to their respective panners
   leftOscillator.connect(leftPanner);
   rightOscillator.connect(rightPanner);
 
-  // Connect both panners to the audio context's destination (the speakers)
   leftPanner.connect(audioCtx.destination);
   rightPanner.connect(audioCtx.destination);
-
-  // Start the oscillators
-  leftOscillator.start();
-  rightOscillator.start();
-
-  // Optionally stop the oscillators after a set time (e.g., after 20 seconds)
-  leftOscillator.stop(audioCtx.currentTime + 20);
-  rightOscillator.stop(audioCtx.currentTime + 20);
 }
 
-  document.getElementById('playButton').addEventListener('click', function() {
-  // Check if the audio context is in a suspended state (since Chrome 71)
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+function toggleBinauralBeat() {
+  if (!isPlaying) {
+    // Resume AudioContext if needed
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    // Create and start oscillators
+    createOscillators(440, 40);
+    leftOscillator.start();
+    rightOscillator.start();
+    isPlaying = true;
+    document.getElementById('toggleButton').textContent = '||'; // Change button to show pause symbol
+  } else {
+    // Stop the oscillators
+    if (leftOscillator) {
+      leftOscillator.stop();
+      leftOscillator = null;
+    }
+    if (rightOscillator) {
+      rightOscillator.stop();
+      rightOscillator = null;
+    }
+    isPlaying = false;
+    document.getElementById('toggleButton').textContent = '>'; // Change button to show play symbol
   }
-  
-  // Play the binaural beat with a base frequency of 440Hz
-  playBinauralBeat(440, 40);
-});
+}
+
+document.getElementById('toggleButton').addEventListener('click', toggleBinauralBeat);
 
 </script>
