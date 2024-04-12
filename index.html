@@ -1,1 +1,46 @@
 hello 四十hz
+
+<script>
+  // Create an instance of the AudioContext
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playBinauralBeat(baseFrequency, beatFrequency) {
+  // Calculate the frequencies for each ear
+  const leftEarFrequency = baseFrequency;
+  const rightEarFrequency = baseFrequency + beatFrequency;
+
+  // Create oscillators for each ear
+  const leftOscillator = audioCtx.createOscillator();
+  const rightOscillator = audioCtx.createOscillator();
+
+  // Set oscillator frequencies
+  leftOscillator.frequency.setValueAtTime(leftEarFrequency, audioCtx.currentTime);
+  rightOscillator.frequency.setValueAtTime(rightEarFrequency, audioCtx.currentTime);
+
+  // Create a stereo panner for each oscillator to pan the sound left or right
+  const leftPanner = audioCtx.createStereoPanner();
+  const rightPanner = audioCtx.createStereoPanner();
+  leftPanner.pan.setValueAtTime(-1, audioCtx.currentTime); // Pan left
+  rightPanner.pan.setValueAtTime(1, audioCtx.currentTime); // Pan right
+
+  // Connect the oscillators to their respective panners
+  leftOscillator.connect(leftPanner);
+  rightOscillator.connect(rightPanner);
+
+  // Connect both panners to the audio context's destination (the speakers)
+  leftPanner.connect(audioCtx.destination);
+  rightPanner.connect(audioCtx.destination);
+
+  // Start the oscillators
+  leftOscillator.start();
+  rightOscillator.start();
+
+  // Optionally stop the oscillators after a set time (e.g., after 20 seconds)
+  leftOscillator.stop(audioCtx.currentTime + 20);
+  rightOscillator.stop(audioCtx.currentTime + 20);
+}
+
+// Play a 40Hz binaural beat with a base frequency of 440Hz
+playBinauralBeat(440, 40);
+
+</script>
