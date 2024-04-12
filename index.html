@@ -1,5 +1,5 @@
 hello 四十hz
-added JS 
+<button id="playButton">Play Binaural Beats</button>
 
 <script>
   // Create an instance of the AudioContext
@@ -41,7 +41,14 @@ function playBinauralBeat(baseFrequency, beatFrequency) {
   rightOscillator.stop(audioCtx.currentTime + 20);
 }
 
-// Play a 40Hz binaural beat with a base frequency of 440Hz
-playBinauralBeat(440, 40);
+  document.getElementById('playButton').addEventListener('click', function() {
+  // Check if the audio context is in a suspended state (since Chrome 71)
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  
+  // Play the binaural beat with a base frequency of 440Hz
+  playBinauralBeat(440, 40);
+});
 
 </script>
