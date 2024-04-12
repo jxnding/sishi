@@ -1,0 +1,41 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #444444;
+  overflow: hidden;
+}
+
+.circle {
+  position: fixed;
+  bottom: 0;
+  width: 200px; /* Initial size */
+  height: 200px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
+  opacity: 0; /* Start fully transparent */
+}
+
+#leftCircle {
+  left: 50%;
+  transform: translateX(-100%) scale(0.5); /* Start from the left side, scaled down */
+}
+
+#rightCircle {
+  right: 50%;
+  transform: translateX(100%) scale(0.5); /* Start from the right side, scaled down */
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}

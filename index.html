@@ -1,5 +1,35 @@
+<head>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
 hello 四十hz
 <button id="toggleButton">></button>
+<div>
+  <label for="baseFrequency">Base Frequency:</label>
+  <input type="range" id="baseFrequency" min="200" max="1000" value="440">
+  <span id="baseFrequencyValue">440</span>Hz
+</div>
+<div>
+  <label for="beatFrequency">Beat Frequency:</label>
+  <input type="range" id="beatFrequency" min="1" max="100" value="40">
+  <span id="beatFrequencyValue">40</span>Hz
+</div>
+
+<div>
+  <label for="baseFrequency">Base Frequency:</label>
+  <input type="range" id="baseFrequency" min="200" max="1000" value="440">
+  <span id="baseFrequencyValue">440</span>Hz
+</div>
+<div>
+  <label for="beatFrequency">Beat Frequency:</label>
+  <input type="range" id="beatFrequency" min="1" max="100" value="40">
+  <span id="beatFrequencyValue">40</span>Hz
+</div>
+
+<div id="visualizer">
+  <div id="leftCircle" class="circle"></div>
+  <div id="rightCircle" class="circle"></div>
+</div>
 
 <script>
   // Create an instance of the AudioContext
@@ -31,21 +61,22 @@ function createOscillators(baseFrequency, beatFrequency) {
   rightPanner.connect(audioCtx.destination);
 }
 
+// Modify the `toggleBinauralBeat` function to read values from the sliders
 function toggleBinauralBeat() {
+  const baseFreq = parseFloat(document.getElementById('baseFrequency').value);
+  const beatFreq = parseFloat(document.getElementById('beatFrequency').value);
+
   if (!isPlaying) {
-    // Resume AudioContext if needed
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
-
-    // Create and start oscillators
-    createOscillators(440, 40);
+    createOscillators(baseFreq, beatFreq);
     leftOscillator.start();
     rightOscillator.start();
     isPlaying = true;
-    document.getElementById('toggleButton').textContent = '||'; // Change button to show pause symbol
+    startVisualizer();
+    document.getElementById('toggleButton').textContent = '||';
   } else {
-    // Stop the oscillators
     if (leftOscillator) {
       leftOscillator.stop();
       leftOscillator = null;
@@ -55,9 +86,33 @@ function toggleBinauralBeat() {
       rightOscillator = null;
     }
     isPlaying = false;
-    document.getElementById('toggleButton').textContent = '>'; // Change button to show play symbol
+    stopVisualizer();
+    document.getElementById('toggleButton').textContent = '>';
   }
 }
+
+const leftCircle = document.getElementById('leftCircle');
+const rightCircle = document.getElementById('rightCircle');
+
+function startVisualizer() {
+  leftCircle.style.animation = "pulse 2s infinite";
+  rightCircle.style.animation = "pulse 2s infinite";
+}
+
+function stopVisualizer() {
+  leftCircle.style.animation = "";
+  rightCircle.style.animation = "";
+}
+
+
+
+document.getElementById('baseFrequency').addEventListener('input', function() {
+  document.getElementById('baseFrequencyValue').textContent = this.value;
+});
+
+document.getElementById('beatFrequency').addEventListener('input', function() {
+  document.getElementById('beatFrequencyValue').textContent = this.value;
+});
 
 document.getElementById('toggleButton').addEventListener('click', toggleBinauralBeat);
 
